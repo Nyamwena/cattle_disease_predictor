@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Theileriosis Prediction</h1>
+    </div>
+    <div class="card-body">
+        <h2>Has Theileriosis: {{ has_theileriosis }}</h2>
+        <h3>Treatment:</h3>
+        <p>{{ treatment }}</p>
+        <a href="{% url 'predict_theileriosis' %}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+{% endblock %}

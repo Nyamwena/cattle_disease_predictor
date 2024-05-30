@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Prediction History</h1>
+    </div>
+    <div class="card-body">
+    <a class="btn btn-primary" href="{% url 'plot_predictions_by_location' %}" role="button">Predictions by Location</a>
+        <a class="btn btn-secondary" href="{% url 'plot_predictions_by_season' %}" role="button">Predictions by Season</a>
+        <a class="btn btn-success" href="{% url 'plot_heatmap' %}" role="button">Heatmap</a>
+        <a class="btn btn-info" href="{% url 'plot_predictions_over_time' %}" role="button">Predictions Over Time</a>
+        <a class="btn btn-warning" href="{% url 'plot_predictions_by_disease' %}" role="button">Predictions by Disease</a>
+        <a class="btn btn-dark" href="{% url 'plot_scatter_location_season' %}" role="button">Scatter Plot (Location vs Season)</a>
+        <hr>
+
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cow ID</th>
+                    <th>Cow Name</th>
+                    <th>Location</th>
+                    <th>Season</th>
+                    <th>Date</th>
+                    <th>Disease</th>
+                    <th>Theileriosis</th>
+                </tr>
+            </thead>
+            <tbody>
+               {% for prediction in predictions %}
+    <tr>
+        <td>{{ prediction.cow_id }}</td>
+        <td>{{ prediction.cow_name }}</td>
+        <td>{{ prediction.location }}</td>
+        <td>{{ prediction.season }}</td>
+        <td>{{ prediction.date }}</td>
+        <td>
+            {% if prediction.has_theileriosis %}
+                Theileriosis
+            {% else %}
+                {{ prediction.disease.name }}
+            {% endif %}
+        </td>
+        <td>
+            {% if prediction.has_theileriosis %}
+                Yes
+            {% else %}
+                No
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

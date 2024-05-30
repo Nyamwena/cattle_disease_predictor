@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to the Cattle Disease Predictor</h1>
+    <p class="lead">This is a simple tool to help predict cattle diseases based on symptoms.</p>
+    <hr class="my-4">
+    <p>Select one of the options below to get started.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'predict_general' %}" role="button">Predict General Disease</a>
+    <a class="btn btn-secondary btn-lg" href="{% url 'predict_theileriosis' %}" role="button">Predict Theileriosis</a>
+{#    <a class="btn btn-secondary btn-lg" href="{% url 'prediction_history' %}" role="button">History</a>#}
+</div>
+{% endblock %}

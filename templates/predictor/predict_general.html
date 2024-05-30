@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Predict General Disease{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Select Symptoms for General Diseases</h1>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

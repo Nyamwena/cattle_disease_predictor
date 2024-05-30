@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Plot{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Prediction Plot</h1>
+    </div>
+    <div class="card-body">
+         <a href="{% url 'prediction_history' %}" class="btn btn-primary">Back</a>
+        <img src="{{ data }}" alt="Plot">
+    </div>
+</div>
+{% endblock %}
