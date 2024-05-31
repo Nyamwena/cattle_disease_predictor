@@ -39,18 +39,32 @@ def predict_theileriosis(symptoms):
 def index(request):
     return render(request, 'predictor/index.html')
 
-@login_required
+
 def predict_general(request):
     if request.method == 'POST':
+        print("predict_general view called")
         form = SymptomForm(request.POST)
         if form.is_valid():
+            print("Form is valid")
             cow_id = form.cleaned_data['cow_id']
             cow_name = form.cleaned_data['cow_name']
             location = form.cleaned_data['location']
             season = form.cleaned_data['season']
             symptoms = form.cleaned_data['symptoms']
-            disease_name = predict_general_disease(symptoms)
-            disease = Disease.objects.get(name=disease_name)
+            # symptom_ids = [symptom.id for symptom in symptoms]  # Extract symptom IDs
+
+            # print(
+                # f"Form cleaned data: cow_id={cow_id}, cow_name={cow_name}, location={location}, season={season}, symptoms={symptom_ids}")
+
+            all_symptoms = list(Symptom.objects.all())
+            input_vector = np.zeros(len(all_symptoms))
+            for symptom in symptoms:
+                index = all_symptoms.index(symptom)
+                input_vector[index] = 1
+
+            prediction = general_model.predict([input_vector])[0]
+            disease = Disease.objects.get(name=prediction)
+
             # Save prediction to the database
             Prediction.objects.create(
                 cow_id=cow_id,
@@ -59,6 +73,7 @@ def predict_general(request):
                 season=season,
                 disease=disease
             )
+
             context = {
                 'form': form,
                 'disease': disease.name,
