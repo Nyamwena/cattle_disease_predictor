@@ -15,4 +15,6 @@ urlpatterns = [
     path('plot_scatter_location_season/', views.plot_scatter_location_season, name='plot_scatter_location_season'),
     path('login/', auth_views.LoginView.as_view(template_name='predictor/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
+    path('predict_stage/', views.predict_stage, name='predict_stage'),
+    path('prediction_stages_view/', views.view_predictions, name='view_predictions'),
 ]

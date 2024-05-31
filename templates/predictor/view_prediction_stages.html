@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Prediction History</h1>
+        <a class="btn btn-secondary btn-lg" href="{% url 'predict_stage' %}" role="button">BACK</a>
+    </div>
+    <div class="card-body">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Cow Name</th>
+                <th>Cow ID</th>
+                <th>Predicted Stage</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+             <tbody>
+            {% for prediction in predictions %}
+            <tr>
+                <td>{{ prediction.cow_name }}</td>
+                <td>{{ prediction.cow_id }}</td>
+                <td>{{ prediction.predicted_stage }}</td>
+                <td>{{ prediction.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

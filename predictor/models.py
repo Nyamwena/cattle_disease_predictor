@@ -30,3 +30,13 @@ class Prediction(models.Model):
 
     def __str__(self):
         return f'{self.cow_name} - {self.disease.name if self.disease else "Theileriosis"}'
+
+
+class PredictionStage(models.Model):
+    cow_name = models.CharField(max_length=100)
+    cow_id = models.CharField(max_length=100)
+    predicted_stage = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.cow_name} ({self.cow_id}) - {self.predicted_stage}'

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Predict General Disease{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Predict Theileriosis Stage in Cattle</h1>
+         <a class="btn btn-primary" href="{% url 'view_predictions' %}" role="button">Reports</a>
+    </div>
+    <div class="card-body">
+
+       <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit"  class="btn btn-primary">Predict</button>
+    </form>
+
+    {% if prediction %}
+        <h2>Predicted Stage: {{ prediction }}</h2>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

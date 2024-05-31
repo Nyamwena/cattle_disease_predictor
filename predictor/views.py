@@ -1,8 +1,8 @@
 from django.shortcuts import render
 import joblib
 import numpy as np
-from .forms import SymptomForm, TheileriosisSymptomForm
-from .models import Disease, Symptom, TheileriosisSymptom, Prediction
+from .forms import SymptomForm, TheileriosisSymptomForm, PredictionForm
+from .models import Disease, Symptom, TheileriosisSymptom, Prediction, PredictionStage
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -10,11 +10,16 @@ import io
 import urllib, base64
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-
+import os
+from django.http import JsonResponse
 
 # Load the trained models
 general_model_path = 'databest_cattle_disease_model.pkl'
 theileriosis_model_path = 'theileriosis_model.pkl'
+
+model_path = 'theileriosis_stage_model.joblib'
+encoders_path = 'label_encoders.joblib'
+stage_encoder_path = 'stage_encoder.joblib'
 
 general_model = joblib.load(general_model_path)
 theileriosis_model = joblib.load(theileriosis_model_path)
@@ -302,3 +307,56 @@ def plot_scatter_location_season(request):
     string = base64.b64encode(buf.read())
     uri = 'data:image/png;base64,' + urllib.parse.quote(string)
     return render(request, 'predictor/plot.html', {'data': uri})
+
+
+model = joblib.load(model_path)
+label_encoders = joblib.load(encoders_path)
+stage_encoder = joblib.load(stage_encoder_path)
+
+def predict_stage(request):
+    prediction = None
+    predicted_stage = None  # Initialize predicted_stage
+    if request.method == 'POST':
+        form = PredictionForm(request.POST)
+        if form.is_valid():
+            cow_name = form.cleaned_data['cow_name']
+            cow_id = form.cleaned_data['cow_id']
+
+            # Extract features from form
+            features = {
+                'Fever': float(form.cleaned_data['fever']),
+                'Lymph_Node_Swelling': form.cleaned_data['lymph_node_swelling'],
+                'Appetite_Loss': form.cleaned_data['appetite_loss'],
+                'Lethargy': form.cleaned_data['lethargy'],
+                'Respiratory_Signs': form.cleaned_data['respiratory_signs'],
+                'Anemia': form.cleaned_data['anemia'],
+                'Jaundice': form.cleaned_data['jaundice'],
+                'Weight_Loss': form.cleaned_data['weight_loss'],
+                'Reproductive_Issues': form.cleaned_data['reproductive_issues']
+            }
+
+            # Encode categorical features
+            for column, le in label_encoders.items():
+                features[column] = le.transform([features[column]])[0]
+
+            # Prepare feature array
+            feature_array = np.array([list(features.values())])
+
+            # Predict the stage
+            prediction = model.predict(feature_array)
+            predicted_stage = stage_encoder.inverse_transform(prediction)[0]
+
+            # Save the prediction to the database
+            PredictionStage.objects.create(
+                cow_name=cow_name,
+                cow_id=cow_id,
+                predicted_stage=predicted_stage
+            )
+    else:
+        form = PredictionForm()
+
+    return render(request, 'predictor/predict_theileriosis_stage.html', {'form': form, 'prediction': predicted_stage})
+
+def view_predictions(request):
+    predictions = PredictionStage.objects.all()
+    return render(request, 'predictor/view_prediction_stages.html', {'predictions': predictions})
